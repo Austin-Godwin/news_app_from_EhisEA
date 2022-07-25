@@ -26,8 +26,8 @@ class ArticleServices {
     return _getArticleFromServer(url);
   }
 
-// creating a method to hold the service call since it the same for getArticles
-// and getArticlesByCategory.
+// creating a method to hold the service call since it is the same 
+//for getArticle and getArticlesByCategory.
   Future<List<Article>> _getArticleFromServer(Uri url) async {
     final http.Response response = await http.get(url);
     final List result = jsonDecode(response.body)["articles"];

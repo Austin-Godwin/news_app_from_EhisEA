@@ -3,14 +3,14 @@ class Article {
   ArticleSource source;
   String? image;
   String content;
-  DateTime publishAt;
+  DateTime publishedAt;
 
   Article({
     required this.title,
     required this.source,
     required this.image,
     required this.content,
-    required this.publishAt,
+    required this.publishedAt,
   });
 
   factory Article.fromJson(Map<String, dynamic> json) {
@@ -19,7 +19,7 @@ class Article {
       source: ArticleSource.fromJson(json["source"]),
       image: json["urlToImage"],
       content: json["content"] ?? "",
-      publishAt: DateTime.parse(json["publishedAt"]).toLocal(),
+      publishedAt: DateTime.parse(json["publishedAt"]).toLocal(),
     );
   }
 
@@ -27,7 +27,7 @@ class Article {
   operator ==(covariant Article other) =>
       other.image == image &&
       other.content == content &&
-      other.publishAt == publishAt &&
+      other.publishedAt == publishedAt &&
       other.title == title &&
       other.source == source;
 
@@ -35,7 +35,7 @@ class Article {
   int get hashCode =>
       image.hashCode ^
       content.hashCode ^
-      publishAt.hashCode ^
+      publishedAt.hashCode ^
       title.hashCode ^
       source.hashCode;
 }

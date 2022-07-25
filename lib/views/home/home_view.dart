@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:general_app/enum/news_category.dart';
 import 'package:general_app/extensions/string_extensions.dart';
+import 'package:general_app/main.dart';
 import 'package:general_app/views/home/category_view.dart';
-import 'package:general_app/views/home/view_models/home_view_model.dart';
 import 'package:general_app/widgets/article_widget.dart';
 import 'view_models/category_view_model.dart';
 
 class HomeView extends StatefulWidget {
-  final HomeViewModel homeViewModel;
-  const HomeView({Key? key, required this.homeViewModel}) : super(key: key);
+  // final HomeViewModel homeViewModel;
+  // final BookmarkViewModel bookmarkViewModel;
+  const HomeView({
+    Key? key,
+    // required this.homeViewModel,
+    // required this.bookmarkViewModel,
+  }) : super(key: key);
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -19,12 +23,14 @@ class _HomeViewState extends State<HomeView> {
   int selectedIndex = 0;
   @override
   void initState() {
-    widget.homeViewModel.getTopHeadlines();
+    // widget.homeViewModel.getTopHeadlines();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final homeViewModel = Home.of(context).homeViewModel;
+    final bookmarkViewModel = Home.of(context).bookmarkViewModel;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         onTap: (tappedIndex) {
@@ -47,9 +53,9 @@ class _HomeViewState extends State<HomeView> {
       body: SafeArea(
         child: selectedIndex == 1
             ? ListView.builder(
-                itemCount: widget.homeViewModel.bookmark.length,
+                itemCount: bookmarkViewModel.bookmark.length,
                 itemBuilder: (context, index) {
-                  final article = widget.homeViewModel.bookmark[index];
+                  final article = bookmarkViewModel.bookmark[index];
                   return ArticleWidget(article: article);
                 },
               )
@@ -90,7 +96,7 @@ class _HomeViewState extends State<HomeView> {
                       child: TabBarView(
                         children: [
                           AnimatedBuilder(
-                            animation: widget.homeViewModel,
+                            animation: bookmarkViewModel,
                             builder: (context, _) {
                               return NotificationListener(
                                 onNotification: (Notification notification) {
@@ -112,18 +118,18 @@ class _HomeViewState extends State<HomeView> {
                                           notificationListener
                                                   .metrics.maxScrollExtent -
                                               300) {
-                                        print("Paginatable");
-                                        widget.homeViewModel.getMore();
+                                        // print("Paginatable");
+                                        homeViewModel.getMore;
                                       }
                                       break;
+                                    //here we ignore all other events
                                     default:
                                       break;
                                   }
                                   return false;
                                 },
                                 child: RefreshIndicator(
-                                  onRefresh:
-                                      widget.homeViewModel.getTopHeadlines,
+                                  onRefresh: homeViewModel.getTopHeadlines,
                                   child: CustomScrollView(
                                     slivers: [
                                       SliverToBoxAdapter(
@@ -136,25 +142,33 @@ class _HomeViewState extends State<HomeView> {
                                       ),
                                       SliverList(
                                         delegate: SliverChildBuilderDelegate(
-                                            (context, index) {
-                                          final article = widget.homeViewModel
-                                              .topHeadlines[index];
-                                          final bool isBookmarked = widget
-                                              .homeViewModel.bookmark
-                                              .contains(article);
-                                          return ArticleWidget(
-                                            article: article,
-                                            isBookmarked: isBookmarked,
-                                            onBookmark: isBookmarked
-                                                ? widget.homeViewModel
-                                                    .removeFromBookmark
-                                                : widget.homeViewModel
-                                                    .addToBookmark,
-                                          );
-                                        },
-                                            childCount: widget.homeViewModel
-                                                .topHeadlines.length),
+                                          (context, index) {
+                                            final article = homeViewModel
+                                                .topHeadlines[index];
+                                            // final bool isBookmarked =
+                                            //     bookmarkViewModel.bookmark
+                                            //         .contains(article);
+                                            return ArticleWidget(
+                                              article: article,
+                                              // isBookmarked: isBookmarked,
+                                              // onBookmark: isBookmarked
+                                              //     ? bookmarkViewModel
+                                              //         .removeFromBookmark
+                                              //     : bookmarkViewModel
+                                              //         .addToBookmark,
+                                            );
+                                          },
+                                          childCount:
+                                              homeViewModel.topHeadlines.length,
+                                        ),
                                       ),
+                                      if (homeViewModel.isLoading)
+                                        const SliverToBoxAdapter(
+                                          child: Center(
+                                            child: CircularProgressIndicator
+                                                .adaptive(),
+                                          ),
+                                        )
                                     ],
                                   ),
                                 ),
@@ -165,6 +179,7 @@ class _HomeViewState extends State<HomeView> {
                             CategoryView(
                               category: item.name,
                               categoryViewModel: CategoryViewModel(item.name),
+                              bookmarkViewModel: bookmarkViewModel,
                             ),
                         ],
                       ),
