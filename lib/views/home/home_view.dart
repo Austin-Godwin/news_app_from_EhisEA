@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:general_app/enum/news_category.dart';
 import 'package:general_app/extensions/string_extensions.dart';
 import 'package:general_app/main.dart';
 import 'package:general_app/views/home/category_view.dart';
+import 'package:general_app/views/home/view_models/home_view_model.dart';
 import 'package:general_app/widgets/article_widget.dart';
 import 'view_models/category_view_model.dart';
 
-class HomeView extends StatefulWidget {
+final homeViewModelProvider =
+    ChangeNotifierProvider<HomeViewModel>((ref) => HomeViewModel());
+
+class HomeView extends ConsumerStatefulWidget {
   // final HomeViewModel homeViewModel;
   // final BookmarkViewModel bookmarkViewModel;
   const HomeView({
@@ -16,10 +21,10 @@ class HomeView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  ConsumerState<HomeView> createState() => _HomeViewConsumerState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewConsumerState extends ConsumerState<HomeView> {
   int selectedIndex = 0;
   @override
   void initState() {
@@ -29,7 +34,8 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final homeViewModel = Home.of(context).homeViewModel;
+    final model = ref.watch(homeViewModelProvider);
+    // final homeViewModel = Home.of(context).homeViewModel;
     final bookmarkViewModel = Home.of(context).bookmarkViewModel;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -119,7 +125,8 @@ class _HomeViewState extends State<HomeView> {
                                                   .metrics.maxScrollExtent -
                                               300) {
                                         // print("Paginatable");
-                                        homeViewModel.getMore;
+                                        // homeViewModel.getMore;
+                                        model.getMore;
                                       }
                                       break;
                                     //here we ignore all other events
@@ -129,7 +136,9 @@ class _HomeViewState extends State<HomeView> {
                                   return false;
                                 },
                                 child: RefreshIndicator(
-                                  onRefresh: homeViewModel.getTopHeadlines,
+                                  onRefresh:
+                                      // homeViewModel.getTopHeadlines,
+                                      model.getTopHeadlines,
                                   child: CustomScrollView(
                                     slivers: [
                                       SliverToBoxAdapter(
@@ -143,8 +152,10 @@ class _HomeViewState extends State<HomeView> {
                                       SliverList(
                                         delegate: SliverChildBuilderDelegate(
                                           (context, index) {
-                                            final article = homeViewModel
-                                                .topHeadlines[index];
+                                            final article =
+                                                model.topHeadlines[index];
+                                            // homeViewModel
+                                            //     .topHeadlines[index];
                                             // final bool isBookmarked =
                                             //     bookmarkViewModel.bookmark
                                             //         .contains(article);
@@ -159,10 +170,12 @@ class _HomeViewState extends State<HomeView> {
                                             );
                                           },
                                           childCount:
-                                              homeViewModel.topHeadlines.length,
+                                          model.topHeadlines.length
+                                              // homeViewModel.topHeadlines.length,
                                         ),
                                       ),
-                                      if (homeViewModel.isLoading)
+                                      if (model.isLoading)
+                                      // (homeViewModel.isLoading)
                                         const SliverToBoxAdapter(
                                           child: Center(
                                             child: CircularProgressIndicator
